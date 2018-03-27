@@ -1,0 +1,134 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "4" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "5_2" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">               
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>广告列表</h5>
+                                <span class="label label-primary" data-bind="text: '总数：' + list().length"></span>
+                            </div>
+                            <div class="ibox-content">
+                                <div>
+                                    <a href="#myModal" role="button" class="btn" data-toggle="modal">添加广告</a>
+                                </div>
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="span1"></th>
+                                            <th class="span4"></th>
+                                            <th class="span5"></th>
+                                            <th class="span2"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: list">
+                                        <tr>
+                                            <td data-bind="text: $index() + 1"></td>                                         
+                                            <td>
+                                                <img data-bind="attr: {src: 'http://118.31.44.54/SwiftHorse' + url}" />
+                                            </td>
+                                            <td data-bind="text: name"></td>
+                                            <td data-bind="text: createTime"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">新增广告</h3>
+    </div>
+    <form id="form" name="file-form" method="post" action="http://118.31.44.54/SwiftHorse/assessory/upload" enctype='multipart/form-data'>
+        <div class="modal-body">
+            <input type="text" name="jumpUrl" data-bind="value: jumpUrl" />
+            <div data-bind="visible: attaches != ''">
+                <img data-bind="attr: {src: attaches}" />
+            </div>
+            <input type="file" name="bannerImage" data-bind="event: {change: fileChange}" accept="image/jpg,image/jpeg,image/png" />
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+            <input value="保存" type="submit" class="btn btn-primary" onclick="addAdvertise()" />
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="~/Dist/js/jquery.form.js"></script>
+<script>
+    var pageListUrl = 'http://118.31.44.54/SwiftHorse/assessory/queryAdvertise';
+    var upLoadUrl = 'http://118.31.44.54/SwiftHorse/assessory/upload';
+
+    var viewModel = {
+        list: ko.observableArray([]),
+        jumpUrl: ko.observable(''),
+        attaches: ko.observable(''),
+        file: ko.observable({})
+    };
+
+    viewModel.fileChange = function (obj, file) {
+        var files = file.target.files[0];
+        console.log('obj == ', obj);
+        console.log('files == ', files);
+        viewModel.file(files);
+    }
+
+    function addAdvertise() {
+        var param = {};
+        var file = viewModel.file();
+        param.jumpUrl = viewModel.jumpUrl();
+        param.fileName = file.name;
+        param.bannerImage = file;
+        $('#form').ajaxSubmit({
+            dataType: 'json',//返回数据类型
+            data: param,
+            success: function (message) {
+                // 对于表单提交成功后处理，message为提交页面的返回内容 
+                console.log('message == ', message);
+            }
+        });
+        return false;
+    }
+
+    viewModel.load = function () {
+        var param = {};
+        param.type = 1;
+        Comget(pageListUrl, param, function (data) {
+            console.log('data == ', data);
+            var backData = strToJson(data.backData);
+            backData.forEach(function (item, index) {
+                item.createTime = dateFormate(item.createTime, '-');
+            });
+            viewModel.list(backData);
+            console.log('list data == ', viewModel.list());
+        });
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

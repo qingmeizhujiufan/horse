@@ -1,0 +1,308 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+    .tile {
+        margin-bottom: 50px;
+    }
+
+        .tile .item {
+            position: relative;
+            height: 120px;
+        }
+
+            .tile .item i {
+                position: absolute;
+                top: 30px;
+                left: 25px;
+                font-size: 68px;
+                color: #f0f0f0;
+            }
+
+            .tile .item .title {
+                position: absolute;
+                right: 20px;
+                bottom: 20px;
+                font-size: 16px;
+                color: #fff;
+            }
+
+            .tile .item .content {
+                position: absolute;
+                right: 20px;
+                bottom: 55px;
+                font-size: 38px;
+                color: #fff;
+            }
+
+    .carousel-control {
+        top: 50%;
+        line-height: 24px;
+        -webkit-border-radius: 23px !important;
+        -moz-border-radius: 23px !important;
+        border-radius: 23px !important;
+    }
+
+    .carousel-inner>.item {
+        height: 300px;
+    }
+
+    .img-command-list li {
+        position: relative;
+        width: 240px;
+        height: 210px;
+        margin-bottom: 50px;
+        margin-right: 20px;
+        padding: 30px 0 !important;
+    }
+
+        .img-command-list li .index {
+            position: absolute;
+            left: 50%;
+            top: -10px;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            border: 1px solid #01D1BA;
+            color: #01D1BA;
+            text-align: center;
+            border-radius: 50% !important;
+            font-weight: 600;
+        }
+
+            .img-command-list li .index:after {
+                content: '';
+                position: absolute;
+                top: 19px;
+                left: 50%;
+                width: 0;
+                height: 20px;
+                border-left: 1px dotted #333;
+            }
+
+        .img-command-list li .del {
+            position: absolute;
+            left: 50%;
+            bottom: -10px;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            border: 1px solid #333;
+            color: #333;
+            text-align: center;
+            border-radius: 50% !important;
+            font-weight: 200;
+        }
+
+            .img-command-list li .del:after {
+                content: '';
+                position: absolute;
+                bottom: 19px;
+                left: 50%;
+                width: 0;
+                height: 20px;
+                border-left: 1px dotted #333;
+            }
+
+            .img-command-list li .del:hover {
+                border-color: #e74c3c;
+                color: #e74c3c;
+                cursor: pointer;
+            }
+
+        .img-command-list li img {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+
+        .img-command-list li .add-img {
+            width: 240px;
+            height: 150px;
+            padding-top: 0px;
+            border: 1px dotted #aaa;
+            text-align: center;
+        }
+
+            .img-command-list li .add-img i {
+                font-size: 46px;
+                color: #aaa;
+                line-height: 125px;
+            }
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "4" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "5_1" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">
+                <div class="span12">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5>首页轮播图管理</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row-fluid">
+                                <div class="span5">
+                                    <h5>轮播效果图</h5>
+                                    <hr />
+                                    <div id="myCarousel" class="carousel slide">
+                                        <ol class="carousel-indicators" data-bind="foreach: sliderImg">
+                                            <li data-target="#myCarousel" data-bind="attr: {'data-slide-to': $index()}, css: {'active': $index() === 0}"></li>
+                                        </ol>
+                                        <!-- Carousel items -->
+                                        <div class="carousel-inner" data-bind="foreach: sliderImg" style="height: 300px;">
+                                            <div class="active item" data-bind="css: {'active': $index() === 0}">
+                                                <img data-bind="attr: {src: url}" style="width: 100%; height: 100%;" />
+                                            </div>
+                                        </div>
+                                        <!-- Carousel nav -->
+                                        <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+                                        <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+                                    </div>
+                                </div>
+                                <div class="span7">
+                                    <h5>图片管理</h5>
+                                    <hr />
+                                    <ul class="unstyled inline img-command-list">
+                                        <!-- ko foreach: sliderImg -->
+                                        <li>
+                                            <span class="index" data-bind="text: $index() + 1"></span>
+                                            <img data-bind="attr: {src: url}" />
+                                            <span class="del" data-bind="click: $parent.del">X</span>
+                                        </li>
+                                        <!-- /ko -->
+                                        <li>
+                                            <div class="add-img">
+                                                <a href="#myModal" data-toggle="modal"><i class="icon-plus-sign"></i></a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">新增轮播图</h3>
+    </div>
+    <form id="form" name="form" method="post" onsubmit="return addAdvertise();" enctype='multipart/form-data' target="uploadFrame">
+        <div class="modal-body">
+            <div class="control-group">
+                <label class="control-label">跳转链接：</label>
+                <div class="controls">
+                    <input type="text" name="jumpUrl" data-bind="value: jumpUrl" placeholder="选填..." />
+                </div>
+            </div>
+            <input type="text" name="fileName" data-bind="value: fileName" style="display: none;" />
+            <input type="text" name="type" value="2" style="display: none;" />
+            <div class="control-group">
+                <label class="control-label">图片选择：</label>
+                <div class="controls">
+                    <input type="file" name="bannerImage" data-bind="event: {change: fileChange}" accept="image/jpg,image/jpeg,image/png" />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn span3" data-dismiss="modal" aria-hidden="true">关闭</button>
+            <input value="保存" type="submit" class="btn pink span3" />
+        </div>
+        <iframe name="uploadFrame" id="uploadFrame" style="display:none;"></iframe>
+    </form>
+</div>
+<script type="text/javascript" src="~/Dist/js/jquery.form.js"></script>
+<script>
+    var pageListUrl = REQ_URL + 'assessory/queryByType';
+    var upLoadUrl = REQ_URL + 'assessory/upload';
+    var delFileUrl = REQ_URL + 'assessory/delete';
+
+    var viewModel = {
+        list: ko.observableArray([]),
+        jumpUrl: ko.observable(''),
+        fileName: ko.observable(''),
+        sliderImg: ko.observableArray([]),
+        file: ko.observable({})
+    };
+
+    viewModel.fileChange = function (obj, file) {
+        var files = file.target.files[0];
+        console.log('obj == ', obj);
+        console.log('files == ', files);
+        viewModel.fileName(files.name);
+        viewModel.file(files);
+    }
+
+    function addAdvertise() {
+        $('#form').ajaxSubmit({
+            url: REQ_URL + 'assessory/upload',
+            //type: 'post', // 提交方式 get/post
+            dataType: 'json',
+            success: function (message) {
+                // 对于表单提交成功后处理，message为提交页面的返回内容
+                console.log('message == ', message);
+                if (message.success) {
+                    $('#myModal').modal('hide');
+                    viewModel.getList();
+                }
+            }
+        });
+        return false; // 阻止表单自动提交事件
+    }
+
+    viewModel.getList = function () {
+        var param = {};
+        param.type = 2;
+        Comget(pageListUrl, param, function (data) {
+            console.log('data == ', data);
+            var backData = strToJson(data.backData);
+            backData.map(function (item, index) {
+                item.url = REQ_URL + item.url;
+            });
+            viewModel.sliderImg(backData);
+        });
+    }
+
+    viewModel.del = function (item) {
+        if (confirm('确定要删除吗?')) {
+            var param = {};
+            param.id = this.id;
+            Comget(
+                delFileUrl,
+                param,
+                function (data) {
+                    if (data.success) {
+                        alert(data.backMsg);
+                        viewModel.sliderImg.remove(item);
+                    }
+                }
+            );
+        }
+    };
+
+    viewModel.load = function () {
+        $('.carousel').carousel();
+
+        viewModel.getList();
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

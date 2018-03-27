@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+    .tile {
+        margin-bottom: 50px;
+    }
+
+        .tile .item {
+            position: relative;
+            height: 120px;
+        }
+
+            .tile .item i {
+                position: absolute;
+                top: 30px;
+                left: 25px;
+                font-size: 68px;
+                color: #f0f0f0;
+            }
+
+            .tile .item .title {
+                position: absolute;
+                right: 20px;
+                bottom: 20px;
+                font-size: 16px;
+                color: #fff;
+            }
+
+            .tile .item .content {
+                position: absolute;
+                right: 20px;
+                bottom: 55px;
+                font-size: 38px;
+                color: #fff;
+            }
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "9" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "StatisticalUser", new { menu_id = "1_1" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">
+                <div class="row-fluid tile">
+                    <div class="span3 item" style="background-color: #22C3AA;">
+                        <i class="icon-heart"></i>
+                        <span class="title">收藏人数总计（人）</span>
+                        <span class="content">10451</span>
+                    </div>
+                    <div class="span3 item" style="background-color: #5dade2;">
+                        <i class="icon-glass"></i>
+                        <span class="title">招工率</span>
+                        <span class="content">86%</span>
+                    </div>
+                    <div class="span3 item" style="background-color: #eab366;">
+                        <i class="icon-camera"></i>
+                        <span class="title">入驻企业总计（家）</span>
+                        <span class="content">206</span>
+                    </div>
+                    <div class="span3 item" style="background-color: #8E44AD;">
+                        <i class="icon-comments"></i>
+                        <span class="title">消息总计</span>
+                        <span class="content">28450</span>
+                    </div>
+                </div>              
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var viewModel = {
+    };
+
+    viewModel.load = function () {
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

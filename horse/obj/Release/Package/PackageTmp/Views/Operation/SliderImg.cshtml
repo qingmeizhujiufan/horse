@@ -1,0 +1,226 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+    .tile {
+        margin-bottom: 50px;
+    }
+
+        .tile .item {
+            position: relative;
+            height: 120px;
+        }
+
+            .tile .item i {
+                position: absolute;
+                top: 30px;
+                left: 25px;
+                font-size: 68px;
+                color: #f0f0f0;
+            }
+
+            .tile .item .title {
+                position: absolute;
+                right: 20px;
+                bottom: 20px;
+                font-size: 16px;
+                color: #fff;
+            }
+
+            .tile .item .content {
+                position: absolute;
+                right: 20px;
+                bottom: 55px;
+                font-size: 38px;
+                color: #fff;
+            }
+
+    .carousel-control {
+        top: 50%;
+        line-height: 24px;
+        -webkit-border-radius: 23px !important;
+        -moz-border-radius: 23px !important;
+        border-radius: 23px !important;
+    }
+
+    .img-command-list li {
+        position: relative;
+        width: 240px;
+        height: 210px;
+        margin-bottom: 50px;
+        margin-right: 20px;
+        padding: 30px 0 !important;
+    }
+
+        .img-command-list li .index {
+            position: absolute;
+            left: 50%;
+            top: -10px;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            border: 1px solid #01D1BA;
+            color: #01D1BA;
+            text-align: center;
+            border-radius: 50% !important;
+            font-weight: 600;
+        }
+
+            .img-command-list li .index:after {
+                content: '';
+                position: absolute;
+                top: 19px;
+                left: 50%;
+                width: 0;
+                height: 20px;
+                border-left: 1px dotted #333;
+            }
+
+        .img-command-list li .del {
+            position: absolute;
+            left: 50%;
+            bottom: -10px;
+            width: 20px;
+            height: 20px;
+            margin-left: -10px;
+            border: 1px solid #333;
+            color: #333;
+            text-align: center;
+            border-radius: 50% !important;
+            font-weight: 200;
+        }
+
+            .img-command-list li .del:after {
+                content: '';
+                position: absolute;
+                bottom: 19px;
+                left: 50%;
+                width: 0;
+                height: 20px;
+                border-left: 1px dotted #333;
+            }
+
+            .img-command-list li .del:hover {
+                border-color: #e74c3c;
+                color: #e74c3c;
+                cursor: pointer;
+            }
+
+        .img-command-list li img {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+
+        .img-command-list li .add-img {
+            width: 240px;
+            height: 150px;
+            padding-top: 0px;
+            border: 1px dotted #aaa;
+            text-align: center;
+        }
+
+            .img-command-list li .add-img i {
+                font-size: 46px;
+                color: #aaa;
+                line-height: 125px;
+            }
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "4" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "5_1" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">
+                <div class="span12">
+                    <div class="ibox">
+                        <div class="ibox-title">
+                            <h5>首页轮播图管理</h5>
+                        </div>
+                        <div class="ibox-content">
+                            <div class="row-fluid">
+                                <div class="span5">
+                                    <h5>轮播效果图</h5>
+                                    <hr />
+                                    <div id="myCarousel" class="carousel slide">
+                                        <ol class="carousel-indicators" data-bind="foreach: sliderImg">
+                                            <li data-target="#myCarousel" data-bind="attr: {'data-slide-to': $index()}, css: {'active': $index() === 0}"></li>
+                                        </ol>
+                                        <!-- Carousel items -->
+                                        <div class="carousel-inner" data-bind="foreach: sliderImg">
+                                            <div class="active item" data-bind="css: {'active': $index() === 0}">
+                                                <img data-bind="attr: {src: url}" />
+                                            </div>
+                                        </div>
+                                        <!-- Carousel nav -->
+                                        <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+                                        <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+                                    </div>
+                                </div>
+                                <div class="span7">
+                                    <h5>图片管理</h5>
+                                    <hr />
+                                    <ul class="unstyled inline img-command-list">
+                                        <!-- ko foreach: sliderImg -->
+                                        <li>
+                                            <span class="index" data-bind="text: $index() + 1"></span>
+                                            <img data-bind="attr: {src: url}" />
+                                            <span class="del" data-bind="click: $parent.del">X</span>
+                                        </li>
+                                        <!-- /ko -->
+                                        <li>
+                                            <div class="add-img">
+                                                <i class="icon-plus-sign"></i>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var viewModel = {
+        sliderImg: ko.observableArray([])
+    };
+
+    viewModel.del = function (item) {
+        viewModel.sliderImg.remove(item);
+    };
+
+    viewModel.load = function () {
+        $('.carousel').carousel();
+
+        var sliderImg = [{
+            id: '',
+            url: '../../Images/slider_1.jpg'
+        }, {
+            id: '',
+            url: '../../Images/slider_2.jpg'
+        }, {
+            id: '',
+            url: '../../Images/slider_3.jpg'
+        }];
+        viewModel.sliderImg(sliderImg);
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

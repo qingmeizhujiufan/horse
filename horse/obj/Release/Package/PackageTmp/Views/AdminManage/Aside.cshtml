@@ -1,0 +1,87 @@
+﻿@{
+    Layout = null;
+}
+<div class="aside-bar" style="height: 100%;">
+    <ul class="unstyled">
+        <li id="1" class="title">
+            <a href="@Url.Action("Index", "Home")"><i class="icon-home"></i>首页</a>
+        </li>
+        <li id="2" class="title">
+            <a><i class="icon-user"></i>人员管理</a>
+        </li>
+        <li id="2_1">
+            <a href="@Url.Action("Index", "User")">人员总览</a>
+        </li>
+        <li id="3" class="title">
+            <a><i class="icon-envelope"></i>基本信息管理</a>
+        </li>
+        <li id="3_1">
+            <a href="@Url.Action("CompanyInfo", "BaseInfo")">公司基本信息管理</a>
+        </li>
+        <li id="3_2">
+            <a href="@Url.Action("ApplicantInfo", "BaseInfo")">应聘者基本信息管理</a>
+        </li>
+        <li id="4" class="title">
+            <a><i class="icon-bell-alt"></i>投诉管理</a>
+        </li>
+        <li id="4_1">
+            <a href="@Url.Action("Index", "Complain")">投诉</a>
+        </li>
+        <li id="5" class="title">
+            <a><i class="icon-sitemap"></i>运营管理</a>
+        </li>
+        <li id="5_1">
+            <a href="@Url.Action("SliderImg", "Operation")">首页轮播图管理</a>
+        </li>
+        <li id="5_2">
+            <a href="@Url.Action("Advertisement", "Operation")">广告管理</a>
+        </li>
+        <li id="6" class="title">
+            <a><i class="icon-comments"></i>系统消息管理</a>
+        </li>
+        <li id="6_1">
+            <a href="@Url.Action("Index", "SysComment")">系统消息管理</a>
+        </li>
+        <li id="7" class="title">
+            <a><i class="icon-cog"></i>系统设置</a>
+        </li>
+        <li id="7_1">
+            <a href="@Url.Action("SMS", "SysSetting")">短信设置</a>
+        </li>
+        <li id="7_2">
+            <a href="@Url.Action("PayParam", "SysSetting")">支付参数设置</a>
+        </li>
+        <li id="8" class="title">
+            <a><i class="icon-tags"></i>类别管理</a>
+        </li>
+        <li id="8_1">
+            <a href="@Url.Action("JobCategoryList", "TypeCommand")">岗位类别列表</a>
+        </li>
+        <li id="8_2">
+            <a href="@Url.Action("AddJobCategory", "TypeCommand")">新增岗位类别</a>
+        </li>
+        <li id="9" class="title">
+            <a><i class="icon-bar-chart"></i>统计分析</a>
+        </li>
+        <li id="9_1">
+            <a href="@Url.Action("Index", "StatisticalAnalysis")">统计分析表</a>
+        </li>
+        @*<li>
+                <a href="@Url.Action("Index", "Home")"><i class="icon-cloud"></i>用户统计管理</a>
+            </li>*@
+    </ul>
+</div>
+<script type="text/javascript">
+    (function ($) {
+        $(window).load(function () {
+            $(".aside-bar").mCustomScrollbar({
+                theme: "minimal"
+            });
+        });
+    })(jQuery);
+
+    $(function () {
+        var menu_id = "@ViewData["menu_id"].ToString()";
+        $('#' + menu_id).addClass("active");
+    });
+</script>

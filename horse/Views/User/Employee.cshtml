@@ -1,0 +1,211 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+    .tags-list {
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+
+    .label {
+        padding: 5px 10px !important;
+    }
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "1" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "2_2" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>供人/招人列表</h5>
+                                <div class="ibox-tools">
+                                    <div class="btn-group" data-bind="foreach: btnList">
+                                        <button class="btn" data-bind="text: title, css: {'active': $data.active}, click: $parent.changeBtn"></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="span1"><i class="icon-th-list"></i></th>
+                                            <th class="span2">名称</th>
+                                            <th class="span1">用户名</th>
+                                            <th class="span1">招聘人数</th>
+                                            <th class="span1">工作地点</th>
+                                            <th class="span2">受教育程度</th>
+                                            <th class="span1">底薪</th>
+                                            <th class="span1">中介费</th>
+                                            <th class="span1">发布日期</th>
+                                            <th class="span1"><i class="icon-cog"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: employeeList" id="itemContainer">
+                                        <!-- ko if: $data.active -->
+                                        <tr>
+                                            <td data-bind="text: $index() + 1"></td>
+                                            <td>
+                                                <div data-bind="text: $data.title"></div>
+                                                <ul class="unstyled inline tags-list" data-bind="visible: $data.tagsList.length > 0, foreach: $data.tagsList">
+                                                    <li class="label" data-bind="style: {'background-color': $data.bgColor}">
+                                                        <span data-bind="text: $data.name"></span>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td data-bind="text: $data.companyName"></td>
+                                            <td data-bind="text: $data.personNum"></td>
+                                            <td data-bind="text: $data.workPlace"></td>
+                                            <td data-bind="text: $data.education"></td>
+                                            <td data-bind="text: $data.personBasePay"></td>
+                                            <td data-bind="text: $data.agencyFee"></td>
+                                            <td data-bind="text: $data.publishDate"></td>
+                                            <td class="text-center">
+                                                <a data-bind="click: $parent.goTo">详情</a>
+                                            </td>
+                                        </tr>
+                                        <!-- /ko -->
+                                    </tbody>
+                                </table>
+                                <div class="holder"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var employeeListUrl = REQ_URL + 'business/queryList';
+
+    var viewModel = {
+        employeeList: ko.observableArray([]),
+        color: ['#5dade2', '#22C3AA', '#eab366', '#8E44AD', '#ed4e2a'],
+        btnList: ko.observableArray([
+            {
+                index: 1,
+                title: '查看全部',
+                active: true
+            },
+            {
+                index: 2,
+                title: '只看供人',
+                active: false
+            },
+            {
+                index: 3,
+                title: '只看招人',
+                active: false
+            }
+        ])
+    };
+
+    viewModel.goTo = function () {
+        window.location.href = '/User/EmployeeDetailInfo/' + this.id;
+    }
+
+    viewModel.changeBtn = function () {
+        console.log('this == ', this);
+        if (this.active) return;
+        var btnList = viewModel.btnList();
+        btnList.map(function (item, index) {
+            item.active = false;
+        });
+        btnList[this.index - 1].active = true;
+        viewModel.btnList([]);
+        viewModel.btnList(btnList);
+
+        var employeeList = viewModel.employeeList();
+        if (this.index == 2) {
+            employeeList.map(function (item, index) {
+                if (item.publishType != 0) {
+                    item.active = false;
+                } else {
+                    item.active = true;
+                }
+            });
+
+        } else if (this.index == 3) {
+            employeeList.map(function (item, index) {
+                if (item.publishType != 1) {
+                    item.active = false;
+                } else {
+                    item.active = true;
+                }
+            });
+        } else {
+            employeeList.map(function (item, index) {
+                item.active = true;
+            });
+        }
+        viewModel.employeeList([]);
+        viewModel.employeeList(employeeList);
+        console.log('userList == ', viewModel.employeeList());
+        $("div.holder").jPages({
+            containerID: "itemContainer",
+            previous: "←上一页",
+            next: "下一页→",
+            perPage: 10,
+            delay: 100
+        });
+    }
+
+    //获取根据条件查询发布招人/供人列表
+    viewModel.getEmployeeList = function () {
+        Comget(employeeListUrl, null, function (data) {        
+            var backData = strToJson(data.backData);
+            console.log('backData == ', backData);
+            var content = backData.content;
+            var count = 0;
+            content.map(function (item, index) {
+                item.createTime = dateFormate(item.createTime, '-');
+                item.publishDate = dateFormate(item.publishDate, '-');
+                item.active = true;
+                if (!item.goodTags) item.goodTags = '';
+                item.tagsList = [];
+                if (item.goodTags != '') {
+                    item.goodTags.split(',').map(function (sub_item, sub_index) {
+                        item.tagsList.push({
+                            index: sub_index,
+                            name: sub_item,
+                            bgColor: viewModel.color[sub_index % 5]
+                        });
+                    });
+                }
+
+            });
+            viewModel.employeeList(content);
+            console.log('employeeList data == ', viewModel.employeeList());
+
+            $("div.holder").jPages({
+                containerID: "itemContainer",
+                previous: "←上一页",
+                next: "下一页→",
+                perPage: 10,
+                delay: 100
+            });
+        });
+    }
+
+    viewModel.load = function () {
+        //获取根据条件查询发布招人/供人列表
+        viewModel.getEmployeeList();
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

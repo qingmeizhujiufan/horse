@@ -1,0 +1,334 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+    .tile {
+        margin-bottom: 50px;
+    }
+
+        .tile .item {
+            position: relative;
+            height: 120px;
+        }
+
+            .tile .item i {
+                position: absolute;
+                top: 30px;
+                left: 25px;
+                font-size: 68px;
+                color: #f0f0f0;
+            }
+
+            .tile .item .title {
+                position: absolute;
+                right: 20px;
+                bottom: 20px;
+                font-size: 16px;
+                color: #fff;
+            }
+
+            .tile .item .content {
+                position: absolute;
+                right: 20px;
+                bottom: 55px;
+                font-size: 38px;
+                color: #fff;
+            }
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "6" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "SysSetting", new { menu_id = "1_1" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">
+                <div class="row-fluid tile">
+                    <div class="span3 item" style="background-color: #22C3AA;">
+                        <i class="icon-heart"></i>
+                        <span class="title">收藏人数总计（人）</span>
+                        <span class="content">10451</span>
+                    </div>
+                    <div class="span3 item" style="background-color: #5dade2;">
+                        <i class="icon-glass"></i>
+                        <span class="title">招工率</span>
+                        <span class="content">86%</span>
+                    </div>
+                    <div class="span3 item" style="background-color: #eab366;">
+                        <i class="icon-camera"></i>
+                        <span class="title">入驻企业总计（家）</span>
+                        <span class="content">206</span>
+                    </div>
+                    <div class="span3 item" style="background-color: #8E44AD;">
+                        <i class="icon-comments"></i>
+                        <span class="title">消息总计</span>
+                        <span class="content">28450</span>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5>会员基本情况</h5>
+                                        <span class="label label-primary">会员人数：12</span>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div id="vip_canvas" style="width: 100%; height: 300px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="row-fluid">
+                            <div class="span12">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5>周用户增长量情况</h5>
+                                        <div class="ibox-tools">
+                                            <div data-toggle="buttons" class="btn-group">
+                                                <button class="btn active">最近一周</button>
+                                                <button class="btn">最近一个月</button>
+                                                <button class="btn">最近半年</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div id="main" style="width: 100%; height: 300px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    labelTop = {
+        normal: {
+            label: {
+                show: true,
+                position: 'center',
+                formatter: '{b}',
+                textStyle: {
+                    baseline: 'bottom'
+                }
+            },
+            labelLine: {
+                show: false
+            }
+        }
+    };
+    var labelFromatter = {
+        normal: {
+            label: {
+                formatter: function (params) {
+                    return 100 - params.value + '%'
+                },
+                textStyle: {
+                    baseline: 'top'
+                }
+            }
+        },
+    }
+    var labelBottom = {
+        normal: {
+            color: '#ccc',
+            label: {
+                show: true,
+                position: 'center'
+            },
+            labelLine: {
+                show: false
+            }
+        },
+        emphasis: {
+            color: 'rgba(0,0,0,0)'
+        }
+    };
+    var radius = [40, 55];
+    var vip_option = {
+        color: ['#22C3AA', '#f1c40f', '#e74c3c', '#3498db', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3'],
+        legend: {
+            x: 'center',
+            y: 'bottom',
+            data: [
+                '会员占比', '男性占比', '女性占比'
+            ]
+        },
+        series: []
+    };
+
+    var vip_chart = echarts.init($('#vip_canvas')[0]);
+
+
+    var myChart = echarts.init($('#main')[0]);
+
+    var option = {
+        color: ['#22C3AA', '#f1c40f', '#e74c3c', '#3498db', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3'],
+        tooltip: {
+            trigger: 'axis',
+            formatter: function (params) {
+                return params[0].value[0] + '   ' + '增长量: ' + params[0].value[1];
+            },
+            axisPointer: {
+                animation: true
+            }
+        },
+        legend: {
+            data: ['最近一周'],
+            bottom: 0
+        },
+        grid: {
+            top: '5%',
+            left: '5%',
+            right: '5%',
+            bottom: '20%'
+        },
+        xAxis: {
+            type: 'time',
+            splitLine: {
+                show: false
+            },
+            splitNumber: 0,
+            axisLabel: {
+                interval: 0,
+            }
+        },
+        yAxis: {
+            type: 'value',
+            boundaryGap: [0, '50%'],
+            splitLine: {
+                show: true
+            }
+        },
+        series: []
+    };
+</script>
+
+<script>
+    var getUserGrowInfo = '';
+    var getUserSexInfo = '';
+
+    var viewModel = {
+        growData: ko.observableArray([])
+    };
+
+    //获取增长率情况
+    viewModel.getUserGrowInfo = function () {
+        var data = [
+            {
+                name: '2017/9/19',
+                value: [
+                    '2017/9/19',
+                    6
+                ]
+            }, {
+                name: '2017/9/20',
+                value: [
+                    '2017/9/20',
+                    8
+                ]
+            }, {
+                name: '2017/9/21',
+                value: [
+                    '2017/9/21',
+                    12
+                ]
+            }, {
+                name: '2017/9/22',
+                value: [
+                    '2017/9/22',
+                    16
+                ]
+            }, {
+                name: '2017/9/23',
+                value: [
+                    '2017/9/23',
+                    10
+                ]
+            }, {
+                name: '2017/9/24',
+                value: [
+                    '2017/9/24',
+                    16
+                ]
+            }, {
+                name: '2017/9/25',
+                value: [
+                    '2017/9/25',
+                    10
+                ]
+            }
+        ];
+        option.series[0] = {
+            name: '最近一周',
+            type: 'line',
+            smooth: true,
+            showSymbol: true,
+            hoverAnimation: true,
+            data: data
+        };
+        myChart.setOption(option);
+    };
+
+    //获取性别情况
+    viewModel.getUserSexInfo = function () {
+        vip_option.series = [
+                    {
+                        type: 'pie',
+                        center: ['20%', '40%'],
+                        radius: radius,
+                        x: '0%', // for funnel
+                        itemStyle: labelFromatter,
+                        data: [
+                         { name: 'other', value: 0, itemStyle: labelBottom },
+                         { name: '会员占比', value: 25, itemStyle: labelTop }
+                        ]
+                    },
+                    {
+                        type: 'pie',
+                        center: ['50%', '40%'],
+                        radius: radius,
+                        x: '20%', // for funnel
+                        itemStyle: labelFromatter,
+                        data: [
+                         { name: 'other', value: 61, itemStyle: labelBottom },
+                         { name: '男性占比', value: 39, itemStyle: labelTop }
+                        ]
+                    }, {
+                        type: 'pie',
+                        center: ['80%', '40%'],
+                        radius: radius,
+                        x: '40%', // for funnel
+                        itemStyle: labelFromatter,
+                        data: [
+                         { name: 'other', value: 39, itemStyle: labelBottom },
+                         { name: '女性占比', value: 61, itemStyle: labelTop }
+                        ]
+                    }
+        ];
+        vip_chart.setOption(vip_option);
+    };
+
+    viewModel.load = function () {
+        viewModel.getUserGrowInfo();
+        viewModel.getUserSexInfo();
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

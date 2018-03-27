@@ -1,0 +1,248 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "5" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "6_1" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">             
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>系统消息管理</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <div class="control-group">
+                                            <label class="control-label">消息名称：</label>
+                                            <div class="controls">
+                                                <input type="text" data-bind="value: msgTitle" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span6">
+                                        <div class="control-group">
+                                            <label class="control-label">消息内容：</label>
+                                            <div class="controls">
+                                                <input type="text" data-bind="value: msgBody" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <div class="control-group">
+                                            <label class="control-label">处理链接：</label>
+                                            <div class="controls">
+                                                <input type="text" data-bind="value: msgDealurl" />
+                                            </div>
+                                        </div>
+                                    </div>                              
+                                </div>
+                                <hr />
+                                <div class="control-group">
+                                    <label class="control-label"></label>
+                                    <div class="controls">
+                                        <a class="btn pink" data-bind="click: openModal">发送消息</a>
+                                    </div>
+                                </div>
+                                <table class="table table-bordered table-hover marginTop20">
+                                    <thead>
+                                        <tr>
+                                            <th class="span1"><i class="icon-th-list"></i></th>
+                                            <th class="span1">消息ID</th>
+                                            <th class="span1">状态</th>
+                                            <th class="span2">消息名称</th>
+                                            <th class="span3">消息内容</th>
+                                            <th class="span2">处理链接</th>
+                                            <th class="span2">创建日期</th>
+                                            @*<th class="span1"><i class="icon-cog"></i></th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: list" id="itemContainer">
+                                        <tr>
+                                            <td data-bind="text: $index() + 1"></td>
+                                            <td data-bind="text: $data.id"></td>
+                                            <td data-bind="text: $data.isRead"></td>
+                                            <td data-bind="text: $data.msgTitle"></td>
+                                            <td data-bind="text: $data.msgBody"></td>
+                                            <td data-bind="text: $data.msgDealurl"></td>
+                                            <td data-bind="text: $data.createTime"></td>
+                                            @*<td class="text-center"><a class="red" data-bind="click: $parent.delFile">删除</a></td>*@
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="holder"></div>
+                            </div>
+                        </div>
+                    </div>                     
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">群发人员勾选</h3>
+    </div>
+    <div class="modal-body">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th class="span2" data-bind="click: selectAll"><i class="icon-ok-sign" data-bind="style: {color: selectedAll() ? '#01D1BA' : '#acacac'}"></i>&nbsp;是否选中</th>
+                    <th class="span1"><i class="icon-th-list"></i></th>
+                    <th class="span2">用户名</th>             
+                    <th class="span3">姓名</th>
+                    <th class="span3">类型</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: userList" id="userItemContainer">
+                <tr>                
+                    <td data-bind="click: $parent.choose"><i class="icon-ok-sign" data-bind="style: {color: active() ? '#01D1BA' : '#acacac'}"></i></td>
+                    <td data-bind="text: $index() + 1"></td>
+                    <td data-bind="text: $data.phone"></td>
+                    <td data-bind="text: $data.userName"></td>
+                    <td data-bind="text: $data.type"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="holder"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn span3" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <input value="确认发送" type="submit" class="btn pink span3" data-bind="click: sendMsg" />
+    </div>
+</div>
+<script>
+    var msgListUrl = REQ_URL + 'message/queryList';
+    var sendMsgUrl = REQ_URL + 'message/pushMessages';
+    var userListUrl = REQ_URL + 'user/userList';
+
+    var viewModel = {
+        msgTitle: ko.observable(''),
+        msgBody: ko.observable(''),
+        msgDealurl: ko.observable(''),
+        list: ko.observableArray([]),
+        userList: ko.observableArray([]),
+        selectedUserList: ko.observableArray([]),
+        selectedAll: ko.observable(false)
+    };
+
+    viewModel.openModal = function () {
+        $('#myModal').modal('show');
+        viewModel.getList();
+    }
+
+    viewModel.selectAll = function () {
+        var userList = viewModel.userList();
+        if (viewModel.selectedAll()) {          
+            userList.map(function (item, index) {
+                item.active(false);
+            });
+            viewModel.selectedUserList([]);
+        } else {          
+            userList.map(function (item, index) {
+                item.active(true);
+            });
+            viewModel.selectedUserList(userList);
+        }
+        viewModel.selectedAll(!viewModel.selectedAll());
+    }
+
+    viewModel.choose = function () {
+        if (this.active()) {
+            viewModel.selectedUserList.remove(this);
+        } else {
+            viewModel.selectedUserList.push(this);
+        }
+        this.active(!this.active());
+    }
+
+    viewModel.sendMsg = function () {
+        var messages = [];
+        var param = {};
+        param.receiverId = viewModel.selectedUserList().map(function (item, index) {
+            return item.id;
+        }).join(',');
+        param.senderId = '';
+        param.msgTitle = viewModel.msgTitle().trim();
+        param.msgBody = viewModel.msgBody().trim();
+        param.msgDealurl = viewModel.msgDealurl().trim();
+        messages.push(param);
+
+        Compost(sendMsgUrl, JSON.stringify(messages), function (data) {
+            alert('发送成功');
+            $('#myModal').modal('hide');
+            viewModel.getMsgList();
+        });
+    }
+
+    //获取用户列表
+    viewModel.getList = function () {
+        Comget(userListUrl, null, function (data) {
+            var backData = strToJson(data.backData);
+            var count = 0;
+            backData.map(function (item, index) {
+                item.lastLoginTime = dateFormate(item.lastLoginTime, '-');
+                item.createTime = dateFormate(item.createTime, '-');
+                item.state = item.dr == 1 ? '已屏蔽' : '正常';
+                item.type = item.userType == 1 ? '企业' : '个人';
+                item.active = ko.observable(false);
+                if (item.userType == 1) count++;
+            });
+            viewModel.userList(backData);
+
+            $(".holder").jPages({
+                containerID: "userItemContainer",
+                previous: "←上一页",
+                next: "下一页→",
+                perPage: 10,
+                delay: 100
+            });
+        });
+    }
+
+    viewModel.getMsgList = function () {
+        Comget(msgListUrl, null, function (data) {
+            var data = data.backData;
+            var _data = strToJson(data);
+            _data.map(function (item, index) {
+                item.createTime = dateFormate(item.createTime, '-');
+            });
+            viewModel.list(_data);
+
+            $(".holder").jPages({
+                containerID: "itemContainer",
+                previous: "←上一页",
+                next: "下一页→",
+                perPage: 10,
+                delay: 100
+            });
+        });
+    }
+
+    viewModel.load = function () {
+        viewModel.getMsgList();
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

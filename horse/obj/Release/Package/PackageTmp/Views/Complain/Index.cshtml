@@ -1,0 +1,141 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "3" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "4_1" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">              
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>投诉</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="span1"></th>
+                                            <th class="span2">标题</th>
+                                            <th class="span5">内容</th>
+                                            <th class="span2">日期</th>
+                                            <th class="span2"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: list">
+                                        <tr>
+                                            <td data-bind="text: $index() + 1"></td>
+                                            <td data-bind="text: title"></td>
+                                            <td data-bind="text: content"></td>
+                                            <td data-bind="text: createTime"></td>
+                                            <td class="text-center">
+                                                <a class="btn" data-toggle="modal" data-bind="click: $parent.openModal">回复</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>                 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">投诉回复</h3>
+    </div>
+    <div class="modal-body">
+        <div class="control-group">
+            <label class="control-label">投诉标题：</label>
+            <div class="controls">
+                <span data-bind="text: complainInfo().title"></span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">投诉内容：</label>
+            <div class="controls">
+                <span data-bind="text: complainInfo().content"></span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">投诉日期：</label>
+            <div class="controls">
+                <span data-bind="text: complainInfo().date"></span>
+            </div>
+        </div>
+        <hr />
+        <div class="control-group">
+            <label class="control-label">回复：</label>
+            <div class="controls">
+                <textarea data-bind="value: ''"></textarea>
+            </div>
+        </div>
+        <hr />
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">关闭</button>
+        <input value="保存" type="submit" class="btn btn-primary" data-bind="click: replay" />
+    </div>
+</div>
+<script>
+    var list = ' http://118.31.44.54/SwiftHorse/complaint/queryList';
+
+    var viewModel = {
+        list: ko.observableArray([]),
+        complainInfo: ko.observable({
+            title: '',
+            content: '',
+            date: ''
+        })
+    };
+
+    viewModel.openModal = function () {
+        var complainInfo = viewModel.complainInfo();
+        console.log('model this === ', this);
+        complainInfo = {
+            title: this.title,
+            content: this.content,
+            date: this.createTime
+        };
+        viewModel.complainInfo(complainInfo);
+        $('#myModal').modal('show');
+    }
+
+    viewModel.replay = function () {
+        
+    }
+
+    viewModel.load = function () {
+        var param = {};
+        Comget(list, param, function (data) {     
+            var list = strToJson(data.backData);
+            list.map(function (item, index) {
+                item.createTime = dateFormate(item.createTime, '-');
+            });
+            console.log('list === ', list);
+            viewModel.list(list);
+        });
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

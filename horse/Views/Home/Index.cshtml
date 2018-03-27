@@ -1,0 +1,170 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+    .tile {
+        margin-bottom: 50px;
+    }
+
+        .tile .item {
+            position: relative;
+            height: 120px;
+        }
+
+            .tile .item i {
+                position: absolute;
+                top: 30px;
+                left: 25px;
+                font-size: 68px;
+                color: #f0f0f0;
+            }
+
+            .tile .item .title {
+                position: absolute;
+                right: 20px;
+                bottom: 20px;
+                font-size: 16px;
+                color: #fff;
+            }
+
+            .tile .item .content {
+                position: absolute;
+                right: 20px;
+                bottom: 55px;
+                font-size: 38px;
+                color: #fff;
+            }
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "0" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "1_1" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">             
+                <div class="row-fluid">                   
+                    <div class="span12">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>过去7天用户增长量情况</h5>
+                                @*<div class="ibox-tools">
+                        <div data-toggle="buttons" class="btn-group">
+                            <button class="btn active">最近一周</button>
+                            <button class="btn">最近一个月</button>
+                            <button class="btn">最近半年</button>
+                        </div>
+                    </div>*@
+                            </div>
+                            <div class="ibox-content">
+                                <div id="main" style="width: 100%; height: 300px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var myChart = echarts.init($('#main')[0]);
+
+    var option = {
+        color: ['#22C3AA', '#f1c40f', '#e74c3c', '#3498db', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3'],
+        tooltip: {
+            trigger: 'axis',
+            formatter: function (params) {
+                return params[0].value[0] + '   ' + '增长量: ' + params[0].value[1];
+            },
+            axisPointer: {
+                animation: true
+            }
+        },
+        legend: {
+            data: ['过去7天'],
+            bottom: 0
+        },
+        grid: {
+            top: '5%',
+            left: '5%',
+            right: '5%',
+            bottom: '20%'
+        },
+        xAxis: {
+            type: 'time',
+            splitLine: {
+                show: false
+            },
+            splitNumber: 0,
+            axisLabel: {
+                interval: 0,
+            }
+        },
+        yAxis: {
+            type: 'value',
+            boundaryGap: [0, '50%'],
+            splitLine: {
+                show: true
+            }
+        },
+        series: []
+    };
+</script>
+
+<script>
+    var getUserGrowInfo = '';
+    var getUserSexInfo = '';
+
+    var viewModel = {
+        growData: ko.observableArray([])
+    };
+
+    //获取增长率情况
+    viewModel.getUserGrowInfo = function () {
+        var param = {};
+        param.day = dateFormate(new Date().getTime(), '-');
+        Comget(
+            'http://118.31.44.54/SwiftHorse/user/weeklyGrowth',
+            param,
+            function (data) {
+                var data = strToJson(data.backData);
+                console.log('week data === ', data);
+                option.series[0] = {
+                    name: '最近一周',
+                    type: 'line',
+                    smooth: true,
+                    showSymbol: true,
+                    hoverAnimation: true,
+                    data: data,
+                    areaStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0,
+                                color: '#01D1BA'
+                            }, {
+                                offset: 1,
+                                color: '#ffe'
+                            }])
+                        }
+                    }
+                };
+                myChart.setOption(option);
+            });
+    };
+
+    viewModel.load = function () {
+        viewModel.getUserGrowInfo();
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

@@ -1,0 +1,404 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+    .tile {
+        margin-bottom: 50px;
+    }
+
+        .tile .item {
+            position: relative;
+            height: 100px;
+            text-align: center;
+            border-radius: 7px !important;
+        }
+
+            .tile .item .title {
+                position: absolute;
+                left: 0;
+                bottom: 15px;
+                width: 100%;
+                font-size: 16px;
+                color: #fff;              
+            }
+
+            .tile .item .content {
+                position: absolute;
+                left: 0;
+                bottom: 50px;
+                width: 100%;
+                font-size: 38px;
+                color: #fff;
+            }
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "1" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "2_1" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">
+                <div class="row-fluid tile">
+                    <div class="span3 item" style="background-color: #22C3AA;">
+                        <span class="title">注册用户总数</span>
+                        <span class="content" data-bind="text: userTotal"></span>
+                    </div>
+                    <div class="span3 item" style="background-color: #5dade2;">
+                        <span class="title">企业总数</span>
+                        <span class="content" data-bind="text: companyTotal"></span>
+                    </div>
+                    <div class="span3 item" style="background-color: #eab366;">
+                        <span class="title">当日注册数量</span>
+                        <span class="content" data-bind="text: dayRegisterUserNumber"></span>
+                    </div>
+                    <div class="span3 item" style="background-color: #8E44AD;">
+                        <span class="title">日活跃用户</span>
+                        <span class="content" data-bind="text: dailyActivity"></span>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>人员列表</h5>
+                                <div class="ibox-tools">
+                                    <div class="btn-group" data-bind="foreach: btnList">
+                                        <button class="btn" data-bind="text: title, css: {'active': $data.active}, click: $parent.changeBtn"></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ibox-content">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="span1"><i class="icon-th-list"></i></th>
+                                            <th class="span1">用户名</th>
+                                            <th class="span1">用户类别</th>
+                                            <th class="span2">当前状态</th>
+                                            <th class="span1">电话号码</th>
+                                            <th class="span1">积分</th>
+                                            <th class="span1">用户等级</th>
+                                            <th class="span1">最近登录时间</th>
+                                            <th class="span1">创建时间</th>
+                                            <th class="span2"><i class="icon-cog"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-bind="foreach: userList" id="itemContainer">
+                                        <!-- ko if: $data.active -->
+                                        <tr>
+                                            <td data-bind="text: $index() + 1"></td>
+                                            <td data-bind="text: $data.userName"></td>
+                                            <td data-bind="text: $data.type"></td>
+                                            <td data-bind="text: $data.state, css: {'alert-success': $data.dr == 0, 'alert-error': $data.dr == 1}"></td>
+                                            <td data-bind="text: $data.phone"></td>
+                                            <td data-bind="text: $data.points"></td>
+                                            <td data-bind="text: $data.level"></td>
+                                            <td data-bind="text: $data.lastLoginTime"></td>
+                                            <td data-bind="text: $data.createTime"></td>
+                                            <td class="text-center">
+                                                <a data-bind="click: $parent.goTo">详情</a>
+                                                <a class="red" data-bind="visible: $data.dr == 0, click: $parent.freeze" style="margin-left: 20px;">屏蔽</a>
+                                                <a class="yellow" data-bind="visible: $data.dr == 1, click: $parent.removeFreeze" style="margin-left: 20px;">解除屏蔽</a>
+                                            </td>
+                                        </tr>
+                                        <!-- /ko -->
+                                    </tbody>
+                                </table>
+                                <div class="holder"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>过去7天用户增长量情况</h5>                         
+                            </div>
+                            <div class="ibox-content">
+                                <div id="main" style="width: 100%; height: calc((100vw - 300px)* 0.35);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+                @*<div class="row-fluid marginTop15">
+                    <div>
+                        <button class="btn pink" data-bind="click: addUser">新增用户</button>
+                    </div>
+                </div>*@          
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var myChart = echarts.init($('#main')[0]);
+
+    var option = {
+        color: ['#22C3AA', '#f1c40f', '#e74c3c', '#3498db', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3'],
+        tooltip: {
+            trigger: 'axis',
+            formatter: function (params) {
+                return params[0].value[0] + '   ' + '增长量: ' + params[0].value[1];
+            },
+            axisPointer: {
+                animation: true
+            }
+        },
+        legend: {
+            data: ['过去7天'],
+            bottom: 0
+        },
+        grid: {
+            top: '5%',
+            left: '5%',
+            right: '5%',
+            bottom: '20%'
+        },
+        xAxis: {
+            type: 'time',
+            splitLine: {
+                show: false
+            },
+            splitNumber: 0,
+            axisLabel: {
+                interval: 0,
+            }
+        },
+        yAxis: {
+            type: 'value',
+            boundaryGap: [0, '50%'],
+            splitLine: {
+                show: true
+            }
+        },
+        series: []
+    };
+</script>
+<script>
+    var userListUrl = REQ_URL + 'user/userList';
+    var dayRegisterUserUrl = REQ_URL + 'user/dailyRegistCount';
+    var dailyActivityUrl = REQ_URL + 'user/dailyActivity';
+    var freezeUserUrl = REQ_URL + 'user/frozenUser';
+
+    var viewModel = {
+        userTotal: ko.observable(0),
+        companyTotal: ko.observable(0),
+        userList: ko.observableArray([]),
+        dailyActivity: ko.observable(0),
+        dayRegisterUserNumber: ko.observable(0),
+        btnList: ko.observableArray([
+            {
+                index: 1,
+                title: '查看全部',
+                active: true
+            },
+            {
+                index: 2,
+                title: '只看个人',
+                active: false
+            },
+            {
+                index: 3,
+                title: '只看企业',
+                active: false
+            }
+        ])
+    };
+
+    viewModel.changeBtn = function () {
+        console.log('this == ', this);
+        if (this.active) return;
+        var btnList = viewModel.btnList();
+        btnList.map(function (item, index) {
+            item.active = false;
+        });
+        btnList[this.index - 1].active = true;
+        viewModel.btnList([]);
+        viewModel.btnList(btnList);
+        
+        var userList = viewModel.userList();
+        if (this.index == 2) {
+            userList.map(function (item, index) {
+                if (item.userType != 0) {
+                    item.active = false;
+                } else {
+                    item.active = true;
+                }
+            });
+            
+        } else if (this.index == 3) {
+            userList.map(function (item, index) {
+                if (item.userType != 1) {
+                    item.active = false;
+                } else {
+                    item.active = true;
+                }
+            });
+        }else {
+            userList.map(function (item, index) {
+                item.active = true;
+            });
+        }
+        viewModel.userList([]);
+        viewModel.userList(userList);
+        console.log('userList == ', viewModel.userList());
+        $("div.holder").jPages({
+            containerID: "itemContainer",
+            previous: "←上一页",
+            next: "下一页→",
+            perPage: 10,
+            delay: 100
+        });
+    }
+
+    viewModel.goTo = function () {
+        window.location.href = '/User/UserDetailInfo/' + this.id;
+    }
+
+    viewModel.freeze = function () {
+        var param = {};
+        param.id = this.id;
+        Comget(
+            freezeUserUrl,
+            param,
+            function (data) {
+                if (data.success) {
+                    alert('屏蔽成功');
+                    viewModel.getList();
+                }
+            }
+        );
+    }
+
+    viewModel.removeFreeze = function () {
+        var param = {};
+        param.id = this.id;
+        param.type = 0;
+        Comget(
+            freezeUserUrl,
+            param,
+            function (data) {
+                if (data.success) {
+                    alert('解除屏蔽成功');
+                    viewModel.getList();
+                }
+            }
+        );
+    }
+
+    //viewModel.addUser = function () {
+    //    var param = {};
+    //    param.userName = 'test004';
+    //    param.password = '123456';
+    //    param.phone = '18876554292';
+
+    //    Compost('http://118.31.44.54/SwiftHorse/user/save', JSON.stringify(param), function (data) {
+    //        var backData = strToJson(data.backData);
+    //        alert('添加成功~');
+    //    });
+    //}
+
+    //获取日注册数量
+    viewModel.getDayActiveUserNumber = function () {
+        var param = {};
+        param.day = dateFormate(new Date().getTime(), '-');
+        Comget(dayRegisterUserUrl, param, function (data) {
+            viewModel.dayRegisterUserNumber(data.backData);
+        });
+    }
+
+    //获取日活跃用户数量
+    viewModel.getDailyActivityNumber = function () {
+        var param = {};
+        param.day = dateFormate(new Date().getTime(), '-');
+        Comget(dailyActivityUrl, param, function (data) {
+            viewModel.dailyActivity(data.backData);
+        });
+    }
+
+    //获取用户列表
+    viewModel.getList = function () {
+        Comget(userListUrl, null, function (data) {
+            console.log('data == ', data);
+            var backData = strToJson(data.backData);
+            var count = 0;
+            backData.map(function (item, index) {
+                item.lastLoginTime = dateFormate(item.lastLoginTime, '-');
+                item.createTime = dateFormate(item.createTime, '-');
+                item.state = item.dr == 1 ? '已屏蔽' : '正常';
+                item.type = item.userType == 1 ? '企业' : '个人';
+                item.active = true;
+                if (item.userType == 1) count++;
+            });
+            viewModel.userList(backData);
+            viewModel.userTotal(backData.length);
+            viewModel.companyTotal(count);
+            console.log('userList data == ', viewModel.userList());
+
+            $("div.holder").jPages({
+                containerID: "itemContainer",
+                previous: "←上一页",
+                next: "下一页→",
+                perPage: 10,
+                delay: 100
+            });
+        });
+    }
+
+    //获取增长率情况
+    viewModel.getUserGrowInfo = function () {
+        var param = {};
+        param.day = dateFormate(new Date().getTime(), '-');
+        Comget(
+            REQ_URL + 'user/weeklyGrowth',
+            param,
+            function (data) {
+                var data = strToJson(data.backData);
+                console.log('week data === ', data);
+                option.series[0] = {
+                    name: '最近一周',
+                    type: 'line',
+                    smooth: true,
+                    showSymbol: true,
+                    hoverAnimation: true,
+                    data: data,
+                    areaStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0,
+                                color: '#01D1BA'
+                            }, {
+                                offset: 1,
+                                color: '#ffe'
+                            }])
+                        }
+                    }
+                };
+                myChart.setOption(option);
+            });
+    };
+
+    viewModel.load = function () {
+        //获取用户列表
+        viewModel.getList();
+        //获取日注册数量
+        viewModel.getDayActiveUserNumber();
+        //获取日活跃用户数量
+        viewModel.getDailyActivityNumber();
+        //获取增长率情况
+        viewModel.getUserGrowInfo();
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

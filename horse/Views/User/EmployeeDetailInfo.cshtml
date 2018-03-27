@@ -1,0 +1,462 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<link href="~/Dist/bootstrap-switch-master/dist/css/bootstrap2/bootstrap-switch.min.css" rel="stylesheet" />
+<script src="~/Dist/bootstrap-switch-master/dist/js/bootstrap-switch.min.js" type="text/javascript"></script>
+
+<style type="text/css">
+    .tags li {
+        position: relative;
+        height: 30px;
+        margin-right: 10px;
+        padding: 8px 55px 8px 25px !important;
+        vertical-align: bottom;
+        font-weight: 400;
+    }
+
+        .tags li .del {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 25px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background-color: rgba(0,0,0, 0.5);
+        }
+
+        .tags li .del:hover {
+            cursor: pointer;
+            background-color: rgba(0,0,0, 0.8);
+        }
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "1" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "2_2" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">
+                <div class="row-fluid">
+                    <ul class="breadcrumb">
+                        <li><a href="/User/employee">供人/招人列表</a> <span class="divider">/</span></li>
+                        <li class="active">详情</li>
+                    </ul>
+                </div>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5>详情</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="row-fluid">
+                                    <div class="span12">
+                                        <input class="span2" type="text" data-bind="value: tag" />
+                                        <button class="btn pink" style="vertical-align: 3px;" data-bind="click: settingLabel">新增标签</button>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span12">
+                                        <ul class="unstyled inline tags" data-bind="foreach: tagsList">
+                                            <li class="label" data-bind="style: {'background-color': $data.bgColor}">
+                                                <span data-bind="text: $data.name"></span>
+                                                <span class="del" data-bind="click: $parent.delTag"><i class="icon-remove"></i></span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">职位：</label>
+                                            <div class="controls">
+                                                <span style="color: #01D1BA;" data-bind="text: detailInfo().position"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">发布人：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().userName"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">发布日期：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().publishDate"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">截止日期：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().endDate"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">发布主题：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().title"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">发布人是否认证：</label>
+                                            <div class="controls">
+                                                <span class="label" data-bind="text: detailInfo().isUserOuth ? '已认证' : '未认证', css : {'label-info': detailInfo().isUserOuth == 1, 'label-important': detailInfo().isUserOuth == 0}"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">招人标签：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().tag"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">工作地点：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().workPlace"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">工作区域：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().workArea"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">是否推荐：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().isRecom ? '推荐' : '未推荐'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">返费方式：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().recostFee"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">返费金额：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().recostProfit + '元'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">招聘人数：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().num"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">招聘年龄段：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().personAgeGroup"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">招聘性别：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().sexType == 0 ? '男' : (detailInfo().sexType == 1 ? '女' : '男女适用')"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">岗位类型：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().postType"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">付款类型：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().payType"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">发布类型：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().publishType"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">其他描述：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().memo"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">企业名称：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().companyName"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">企业所属行业：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().companyOwn"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">工种：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().workType"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">民族：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().personNation"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">工作年限：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().personWorkYear + '年'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">籍贯：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().personOriginPlace"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">是否纹身：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().personTatoo ? '有' : '无'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">是否包吃住：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().personRoomboard ? '是' : '否'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">底薪：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().personBasePay + '元'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">综合薪资：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().personPay + '元'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">月保底时长：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().monthGuarantee + '小时'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">是否同意协议：</label>
+                                            <div class="controls">
+                                                <span class="label" data-bind="text: detailInfo().isAgreeDeal ? '同意' : '不同意', css: {'label-info': detailInfo().isAgreeDeal == 1, 'label-important': detailInfo().isAgreeDeal == 0}"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">中介费：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().agencyFee + '元'"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">受教育程度：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().education"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">工作时长类型：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().workTimeType == 0 ? '全职' : (detailInfo().workTimeType == 1 ? '兼职' : '其他')"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="span4">
+                                        <div class="control-group">
+                                            <label class="control-label">返费时间：</label>
+                                            <div class="controls">
+                                                <span data-bind="text: detailInfo().recostTime"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var detailUrl = REQ_URL + 'business/queryOneBusiness';
+    var viewModel = {
+        detailInfo: ko.observable({}),
+        tag: ko.observable(''),
+        tagsList: ko.observableArray([]),
+        color: ['#5dade2', '#22C3AA', '#eab366', '#8E44AD', '#ed4e2a']
+    };
+
+    viewModel.settingLabel = function () {
+        var tag = viewModel.tag().trim();
+        viewModel.tagsList.push({
+            index: viewModel.tagsList().length,
+            name: tag,
+            bgColor: viewModel.color[viewModel.tagsList().length % 5]
+        });
+        viewModel.tag('');
+        var params = {};
+        params.id = '@ViewData["id"]';
+        params.goodTags = viewModel.tagsList().map(function (item, index) {
+            return item.name;
+        }).join(',');
+        Comget(REQ_URL + 'business/saveGoodTags', params, function (data) {
+            alert('新增成功');
+        });
+    }
+
+    viewModel.delTag = function () {
+        console.log('delTag this == ', this);
+        viewModel.tagsList.remove(this);
+        var params = {};
+        params.id = '@ViewData["id"]';
+        params.goodTags = viewModel.tagsList().map(function (item, index) {
+            return item.name;
+        }).join(',');
+        Comget(REQ_URL + 'business/saveGoodTags', params, function (data) {
+            alert('删除成功');
+        });
+    }
+
+    viewModel.load = function () {
+        var param = {
+            id: '@ViewData["id"]'
+        };
+        Comget(detailUrl, param, function (data) {
+            console.log('data == ', data);
+            var backData = strToJson(data.backData);
+            backData.createTime = dateFormate(backData.createTime, '-');
+            backData.publishDate = dateFormate(backData.publishDate, '-');
+            backData.endDate = dateFormate(backData.endDate, '-');
+            backData.recostTime = dateFormate(backData.recostTime, '-');
+            viewModel.detailInfo(backData);
+            if (backData.goodTags) {
+                backData.goodTags.split(',').map(function (item, index) {
+                    viewModel.tagsList.push({
+                        index: index,
+                        name: item,
+                        bgColor: viewModel.color[index % 5]
+                    });
+                });
+            }
+            console.log('detailInfo data == ', viewModel.detailInfo());
+        });
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>

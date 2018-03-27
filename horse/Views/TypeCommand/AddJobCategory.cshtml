@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "首页";
+    Layout = "~/Views/Shared/_Layout_PC.cshtml";
+}
+
+<style type="text/css">
+</style>
+
+<!-- 页面头部  -->
+<div class="header">
+    @{Html.RenderAction("Top", "AdminManage", new { section = "7" });}
+</div>
+
+<!-- 页面主题内容  -->
+<div class="wrap-content">
+    <div class="side-left">
+        @{Html.RenderAction("Aside", "AdminManage", new { menu_id = "8_2" });}
+    </div>
+    <div class="container side-content">
+        <div class="row-fluid">
+            <div id="content" class="animated fadeInRight">
+                <div class="span12">
+                    <div class="ibox-title">
+                        <h5>新增岗位</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="control-group">
+                            <label class="control-label">岗位名称：</label>
+                            <div class="controls">
+                                <input type="text" data-bind="value: ''" />
+                            </div>
+                        </div>
+
+                        <hr />
+                        <div class="control-group">
+                            <label class="control-label"></label>
+                            <div class="controls">
+                                <button class="btn  pink" type="button" style="padding: 10px 40px;" data-bind="click: null">保存</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var viewModel = {
+    };
+
+    viewModel.load = function () {
+    };
+
+    ko.applyBindings(viewModel, $('#content')[0]);
+
+    viewModel.load();
+</script>
